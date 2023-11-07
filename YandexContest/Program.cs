@@ -16,10 +16,14 @@ namespace YandexContest
             int numerator = a * d + b * c;
             int denominator = b * d;
 
-            List<int> numeratorSimpleDividers = GetSimpleDividers(numerator);
+            List<int> numeratorDividers = GetSimpleDividers(numerator);
+            //numeratorDividers.Add(numerator);
+            List<int> numeratorSimpleDividers = FilterNonSimpleDividers(numerator, numeratorDividers);
             numeratorSimpleDividers.Add(numerator);
 
-            List<int> denominatorSimpleDividers = GetSimpleDividers(denominator);
+            List<int> denominatorDividers = GetSimpleDividers(denominator);
+            //denominatorDividers.Add(denominator);
+            List<int> denominatorSimpleDividers = FilterNonSimpleDividers(denominator, denominatorDividers);
             denominatorSimpleDividers.Add(denominator);
 
             int maxCommonDivider = GetMaxCommonDivider(numeratorSimpleDividers, denominatorSimpleDividers);
@@ -52,6 +56,29 @@ namespace YandexContest
             return simpleDividers;
         }
 
+        private static List<int> FilterNonSimpleDividers(int num, List<int> dividers)
+        {
+            List<int> result = new List<int>();
+
+            bool[] nonSimpleDividersMap = new bool[num];
+            foreach (int div in dividers)
+            {
+                if (nonSimpleDividersMap[div - 1] != true)
+                {
+                    result.Add(div);
+                }
+
+                int currentDiv = div * 2;
+                while (currentDiv <= num)
+                {
+                    nonSimpleDividersMap[currentDiv - 1] = true;
+                    currentDiv *= 2;
+                }
+            }
+
+            return result;
+        }
+
         private static int GetMaxCommonDivider(List<int> dividers1, List<int> dividers2)
         {
             int maxCommonDivider = 1;
@@ -61,7 +88,7 @@ namespace YandexContest
             {
                 if (dividers1[i] == dividers2[i])
                 {
-                    maxCommonDivider = dividers1[i];
+                    maxCommonDivider *= dividers1[i];
                 }
             }
 
